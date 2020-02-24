@@ -18,6 +18,7 @@ x-sentry-defaults: &sentry_defaults
     - snuba-replacer
     - symbolicator
     - kafka
+    - rabbitmq
   environment:
     SNUBA: 'http://snuba-api:1218'
   volumes:
@@ -58,6 +59,14 @@ services:
     image: 'redis:5.0-alpine'
     volumes:
       - 'sentry-redis:/data'
+  rabbitmq:
+    << : *restart_policy
+    image: 'rabbitmq:3'
+    environment:
+      hostname: 'sentry'
+      RABBITMQ_DEFAULT_VHOST: 'sentry'
+    volumes:
+      - 'sentry-rabbitmq:/data'
   postgres:
     << : *restart_policy
     image: 'postgres:9.6'
@@ -162,6 +171,8 @@ volumes:
   sentry-postgres:
     external: true
   sentry-redis:
+    external: true
+  sentry-rabbitmq:
     external: true
   sentry-zookeeper:
     external: true
